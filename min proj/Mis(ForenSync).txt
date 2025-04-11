@@ -1,0 +1,196 @@
+colour scheme:
+#201E43(darkest blue)(for bg)
+#134B70(second darkest)
+#508C9B(lighter)
+#91DDCF(bright light teal)(for light text colour on dark bg)
+#37B7C3(a bit dark light teal)
+#EEEEEE(light gray)
+#C7F5F7(cyan bg colour)
+
+
+
+from tkinter import *
+import mysql.connector
+from mysql.connector import Error
+from tkinter import messagebox
+from PIL import Image, ImageTk  # Make sure you have Pillow installed
+
+
+class ForensicManagementApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("ForenSync")
+        self.root.geometry("2560x1440")
+        self.root.attributes("-fullscreen", True)
+
+        def toggle_fullscreen(event=None):
+            self.root.attributes("-fullscreen", not self.root.attributes("-fullscreen"))
+            return "break"
+
+        def quit_application(event=None):
+            self.root.destroy()
+
+        # Bind keys to functions
+        self.root.bind("<Escape>", toggle_fullscreen)
+        self.root.bind("<Control-q>", quit_application)
+        self.root.configure(bg="#EEEEEE")
+        self.create_header()
+        self.create_login_form()
+
+    def create_header(self):
+        header_frame = Frame(self.root, bg="#201E43", padx=10, pady=20)
+        header_frame.pack(fill=X)
+
+        img_path = r"C:\Users\Ayesha\Downloads\F_resized1.png"
+        img = Image.open(img_path)
+        img = img.resize((400, 120), Image.Resampling.LANCZOS)
+        photo = ImageTk.PhotoImage(img)
+
+        img_label = Label(header_frame, image=photo, bg="#201E43")
+        img_label.image = photo
+        img_label.pack(side=LEFT, padx=5)
+
+        # Background image
+        img_path1 = r"C:\Users\Ayesha\Downloads\bg.png"
+        img1 = Image.open(img_path1)
+        img1 = img1.resize((2560, 1440), Image.Resampling.LANCZOS)
+        photo1 = ImageTk.PhotoImage(img1)
+        img_label1 = Label(self.root, image=photo1)
+        img_label1.image = photo1
+        img_label1.pack()
+
+        Button(header_frame, text="Help", font=("Arial", 14), fg="white", bg="#201E43", command=self.dummy_command, height=1, width=7).pack(side=RIGHT, padx=5)
+
+    def create_login_form(self):
+        login_frame = Frame(self.root, bg="#201E43", padx=30, pady=30)
+        login_frame.place(relx=0.5, rely=0.6, anchor="center")
+
+        self.username_entry = Entry(login_frame, font=("Arial", 12), width=15)
+        self.username_entry.insert(0, "Username")
+        self.username_entry.bind("<FocusIn>", self.clear_username_placeholder)
+        self.username_entry.bind("<FocusOut>", self.restore_username_placeholder)
+        self.username_entry.place(relx=0.06, rely=0.1)
+
+        self.password_entry = Entry(login_frame, font=("Arial", 12), width=15)
+        self.password_entry.insert(0, "Password")
+        self.password_entry.bind("<FocusIn>", self.clear_password_placeholder)
+        self.password_entry.bind("<FocusOut>", self.restore_password_placeholder)
+        self.password_entry.pack(padx=10, pady=70)
+
+        Button(login_frame, text="Login", fg="white", font=("Arial", 12), bg="#201E43", command=self.login).place(relx=0.35, rely=0.75)
+
+    def login(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+
+        if username and password:
+            conn = None
+            try:
+                conn = mysql.connector.connect(
+                    host="localhost",
+                    user="root",
+                    password="Ayesha@123",
+                    database="forensync"
+                )
+                cursor = conn.cursor()
+                cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
+                user = cursor.fetchone()
+                if user:
+                    messagebox.showinfo("Login Successful", "Logged in Successfully!")
+                    self.open_dashboard()  # Call dashboard on success
+                else:
+                    messagebox.showerror("Login Error", "Invalid Username or Password.")
+            except Error as e:
+                messagebox.showerror("Database Error", str(e))
+            finally:
+                if conn and conn.is_connected():
+                    cursor.close()
+                    conn.close()
+        else:
+            messagebox.showwarning("Input Error", "Please fill all fields.")
+
+    def clear_username_placeholder(self, event):
+        if self.username_entry.get() == "Username":
+            self.username_entry.delete(0, "end")
+
+    def restore_username_placeholder(self, event):
+        if self.username_entry.get() == "":
+            self.username_entry.insert(0, "Username")
+
+    def clear_password_placeholder(self, event):
+        if self.password_entry.get() == "Password":
+            self.password_entry.delete(0, "end")
+            self.password_entry.config(show="*")
+
+    def restore_password_placeholder(self, event):
+        if self.password_entry.get() == "":
+            self.password_entry.insert(0, "Password")
+            self.password_entry.config(show="")
+
+    def dummy_command(self):
+        print("Button clicked")
+
+    def open_dashboard(self):
+        self.root.destroy()  # Close the current window
+        dashboard_root = Tk()
+        dashboard_app = ForensicManagementDashboard(dashboard_root)  # Open the dashboard window
+        dashboard_root.mainloop()
+
+
+class ForensicManagementDashboard:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("ForenSync Dashboard")
+        self.root.geometry("2560x1440")
+        self.root.attributes("-fullscreen", True)
+
+        def toggle_fullscreen(event=None):
+            self.root.attributes("-fullscreen", not self.root.attributes("-fullscreen"))
+            return "break"
+
+        def quit_application(event=None):
+            self.root.destroy()
+
+        self.root.bind("<Escape>", toggle_fullscreen)
+        self.root.bind("<Control-q>", quit_application)
+        self.root.configure(bg="#EEEEEE")
+        self.create_header()
+
+    def create_header(self):
+        header_frame = Frame(self.root, bg="#201E43", padx=10, pady=20)
+        header_frame.pack(fill=X)
+
+        img_path = r"C:\Users\Ayesha\Downloads\F.png"
+        img = Image.open(img_path)
+        img = img.resize((100, 100), Image.Resampling.LANCZOS)
+        photo = ImageTk.PhotoImage(img)
+
+        img_label = Label(header_frame, image=photo, bg="#201E43")
+        img_label.image = photo
+        img_label.pack(side=LEFT, padx=10)
+
+        Button(header_frame, text="Dashboard", font=("Arial", 12), fg="white", bg="#201E43", command=self.dummy_command).pack(side=LEFT, padx=10)
+        Button(header_frame, text="Cases", font=("Arial", 12), fg="white", bg="#201E43", command=self.dummy_command).pack(side=LEFT, padx=10)
+        Button(header_frame, text="Reports", font=("Arial", 12), fg="white", bg="#201E43", command=self.dummy_command).pack(side=LEFT, padx=10)
+        Button(header_frame, text="Search", font=("Arial", 12), fg="white", bg="#201E43", command=self.dummy_command).pack(side=LEFT, padx=10)
+        Button(header_frame, text="Statistics", font=("Arial", 12), fg="white", bg="#201E43", command=self.dummy_command).pack(side=LEFT, padx=10)
+
+        Button(header_frame, text="Profile", font=("Arial", 12), fg="white", bg="#201E43", command=self.dummy_command).pack(side=RIGHT, padx=5)
+        Button(header_frame, text="Help", font=("Arial", 12), fg="white", bg="#201E43", command=self.dummy_command).pack(side=RIGHT, padx=5)
+        Button(header_frame, text="Logout", font=("Arial", 12), fg="white", bg="#201E43", command=self.root.quit).pack(side=RIGHT, padx=5)
+
+    def dummy_command(self):
+        print("Button clicked")
+
+
+def main():
+    root = Tk()
+    app = ForensicManagementApp(root)
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    main()
+
+
+
