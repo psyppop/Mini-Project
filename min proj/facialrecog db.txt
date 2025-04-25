@@ -1,0 +1,51 @@
+mysql> use facerecognitiondb
+Database changed
+mysql> show tables;
++-----------------------------+
+| Tables_in_facerecognitiondb |
++-----------------------------+
+| actions                     |
+| activity_log                |
+| admin                       |
+| cases                       |
+| face_recognition            |
+| faces                       |
+| investigator                |
+| permissions                 |
+| reference_images            |
+| supervisor                  |
+| users                       |
++-----------------------------+
+11 rows in set (0.01 sec)
+
+mysql> desc face_recognition;
++------------+--------------+------+-----+---------+----------------+
+| Field      | Type         | Null | Key | Default | Extra          |
++------------+--------------+------+-----+---------+----------------+
+| id         | int          | NO   | PRI | NULL    | auto_increment |
+| name       | varchar(255) | NO   |     | NULL    |                |
+| face_data  | longblob     | NO   |     | NULL    |                |
+| face_image | longblob     | YES  |     | NULL    |                |
++------------+--------------+------+-----+---------+----------------+
+4 rows in set (0.00 sec)
+
+mysql> desc reference_images;
++----------------+--------------+------+-----+---------+----------------+
+| Field          | Type         | Null | Key | Default | Extra          |
++----------------+--------------+------+-----+---------+----------------+
+| id             | int          | NO   | PRI | NULL    | auto_increment |
+| name           | varchar(255) | NO   |     | NULL    |                |
+| image_encoding | text         | NO   |     | NULL    |                |
+| image_path     | text         | NO   |     | NULL    |                |
++----------------+--------------+------+-----+---------+----------------+
+4 rows in set (0.01 sec)
+
+mysql> desc faces;
++----------+--------------+------+-----+---------+----------------+
+| Field    | Type         | Null | Key | Default | Extra          |
++----------+--------------+------+-----+---------+----------------+
+| id       | int          | NO   | PRI | NULL    | auto_increment |
+| name     | varchar(255) | NO   |     | NULL    |                |
+| encoding | blob         | NO   |     | NULL    |                |
++----------+--------------+------+-----+---------+----------------+
+3 rows in set (0.00 sec)
