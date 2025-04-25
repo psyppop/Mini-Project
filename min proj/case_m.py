@@ -26,7 +26,7 @@ class Forensyncapp:
             self.db_connection = mysql.connector.connect(
                 host="127.0.0.1",  
                 user="root",  
-                password="rootsavio321",  
+                password="root",  
                 database="fms", 
                 auth_plugin="mysql_native_password"
             )
